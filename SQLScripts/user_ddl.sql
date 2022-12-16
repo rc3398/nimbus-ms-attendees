@@ -1,16 +1,14 @@
-create schema user;
-
-create table user.contact_info(
-    user_id VARCHAR(50) NOT NULL,
+create schema attendee;
+create table attendee.contact_info(
+    attendee_id VARCHAR(50) NOT NULL,
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
-    gender ENUM,
+    gender ENUM('MALE','FEMALE','OTHER'),
     email_address VARCHAR(254) NOT NULL,
     birth_date DATE NOT NULL,
     phone VARCHAR(30) NOT NULL,
-    primary key (user_id)
+    primary key (attendee_id)
 );
-
 /*
 create table user.address(
     user_id VARCHAR(50) NOT NULL,
