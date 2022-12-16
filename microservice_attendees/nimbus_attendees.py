@@ -9,27 +9,27 @@ class Nimbus_Attendees:
 
     @staticmethod
     def _get_connection():
-        ENDPOINT="nimbus-db.c4dwsoa8ic0w.us-east-1.rds.amazonaws.com"
-        PORT="3306"
-        # HOST=os.environ.get("DBHOST")
-        # USER=os.environ.get("DBUSER")
-        # PW=os.environ.get("DBPW")
-        HOST=""
-        USER="admin"
-        PW="dbpassword"
-        REGION="us-east-1"
-        DBNAME="nimbus-db"
+
+       #usr = os.environ.get("DBUSER")
+       #pw = os.environ.get("DBPW")
+       #h = os.environ.get("DBHOST")
+
+        usr = 'admin' 
+        pw = 'dbpassword'
+        h = 'nimbus-db.c4dwsoa8ic0w.us-east-1.rds.amazonaws.com'
+        
+        
         
         conn = pymysql.connect(
-            db=ENDPOINT,
-            user=USER,
-            password=PW,
-            host=HOST,
-            port=PORT,
+            port=3306,
+            user=usr,
+            password=pw,
+            host=h,
             cursorclass=pymysql.cursors.DictCursor,
             autocommit=True
         )
         return conn
+
 
 
     @staticmethod
@@ -80,3 +80,17 @@ class Nimbus_Attendees:
         res = cur.execute(sql, args=uid)
         result = cur.fetchone()
         return result
+
+if __name__ == "__main__":
+    
+   nimbus = Nimbus_Attendees()
+   conn = Nimbus_Attendees._get_connection()
+   cur = conn.cursor()
+   try:
+       if cur.connection:
+            print("Connected")
+       else:
+           print("No connection")
+   except Exception as e:
+       print(str(e))
+   
