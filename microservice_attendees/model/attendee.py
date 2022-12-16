@@ -1,4 +1,5 @@
 from marshmallow import Schema, fields, post_load
+from enum import Enum
 
 class Attendee(object):
     def __init__(self, attendee_id, first_name, last_name, gender, 
@@ -17,13 +18,18 @@ class Attendee(object):
 class AttendeeSchema(Schema):
       # class Meta:
       #     fields = ('attendee_id', 'first_name', 'last_name', 'email_address', 'birth_date', 'phone', 'gender')
+      
+    class Gender(Enum):
+        MALE = 1
+        FEMALE = 2
+        OTHER = 3
     
     first_name = fields.Str()
     last_name = fields.Str()
     email_address = fields.Str()
     birth_date = fields.Str()
     phone = fields.Str()
-    gender = fields.Enum()
+    gender = fields.Enum(enum=Gender, by_value=True)
     attendee_id = fields.Str()
     
     @post_load

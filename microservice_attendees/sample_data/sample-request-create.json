@@ -1,0 +1,10 @@
+{
+  "attendee": {
+    "first_name": "John",
+    "last_name": "Cena",
+    "email_address": "johncena@gmail.com",
+    "birth_date": "2000-02-03T06:48:07",
+    "phone": "917-623-6790",
+    "gender": "MALE",
+  }
+}
