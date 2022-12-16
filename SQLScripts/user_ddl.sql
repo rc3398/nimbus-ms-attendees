@@ -11,6 +11,7 @@ create table user.contact_info(
     primary key (user_id)
 );
 
+/*
 create table user.address(
     user_id VARCHAR(50) NOT NULL,
     address_line1 VARCHAR(254),
@@ -33,3 +34,4 @@ create table user.payment(
     exp_year VARCHAR(2) NOT NULL,
     card_type VARCHAR(10) NOT NULL
 )
+*/

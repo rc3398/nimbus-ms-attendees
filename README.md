@@ -16,22 +16,22 @@ To build the service locally, create a Python venv, then clone the repository.
 python3 -m venv env-path
 cd env-path
 source bin/activate
-git clone https://github.com/yaminivibha/nimbus.git
+git clone https://github.com/rc3398/nimbus-ms-attendees.git
 ```
 
 Next you'll want to enter the repository directory and install the requirements. \
 
 ```sh
-cd nimbus
-python3 -m pip install --upgrade pip
+cd nimbus-ms-attendees
+python3 -m pip3 install --upgrade pip3
 ```
 
 NOTE: It is advisable you run this command every time you do a pull.
 ```sh
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 ```
 ### Running the web-app locally
 ```sh
-cd nimbus/web-app
-python3 app.py
+cd nimbus-ms-attendees/microservice_attendees
+python3 application.py
 ```
