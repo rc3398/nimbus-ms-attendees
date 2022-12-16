@@ -11,9 +11,12 @@ class Nimbus_Attendees:
     def _get_connection():
         ENDPOINT="nimbus-db.c4dwsoa8ic0w.us-east-1.rds.amazonaws.com"
         PORT="3306"
-        HOST=os.environ.get("DBHOST")
-        USER=os.environ.get("DBUSER")
-        PW=os.environ.get("DBPW")
+        # HOST=os.environ.get("DBHOST")
+        # USER=os.environ.get("DBUSER")
+        # PW=os.environ.get("DBPW")
+        HOST=""
+        USER="admin"
+        PW="dbpassword"
         REGION="us-east-1"
         DBNAME="nimbus-db"
         
@@ -30,18 +33,18 @@ class Nimbus_Attendees:
 
 
     @staticmethod
-    def create_attendee(user):
-        sql = "INSERT INTO USERS (first_name, last_name, email_address, birth_date, phone, gender) VALUES (%s,%s,%s,%s,%s,%s);"
+    def create_attendee(attendee):
+        sql = "INSERT INTO contact_info (first_name, last_name, email_address, birth_date, phone, gender) VALUES (%s,%s,%s,%s,%s,%s);"
         conn = Nimbus_Attendees._get_connection()
         cur = conn.cursor()
-        res = cur.execute(sql, user.first_name, user.last_name, user.email_address, user.birth_date, user.phone, user.gender)
+        res = cur.execute(sql, attendee.first_name, attendee.last_name, attendee.email_address, attendee.birth_date, attendee.phone, attendee.gender)
         result = cur.fetchone()
         return result
 
 
     @staticmethod
-    def get_all_users():
-        sql = "SELECT * FROM USERS;"
+    def get_all_attendees():
+        sql = "SELECT * FROM contact_info;"
         conn = Nimbus_Attendees._get_connection()
         cur = conn.cursor()
         res = cur.execute(sql)
@@ -51,7 +54,7 @@ class Nimbus_Attendees:
 
     @staticmethod
     def get_attendee_by_uid(uid):
-        sql = "SELECT * FROM f22_databases.columbia_students WHERE guid=%s"
+        sql = "SELECT * FROM contact_info WHERE guid=%s"
         conn = Nimbus_Attendees._get_connection()
         cur = conn.cursor()
         res = cur.execute(sql, args=uid)
@@ -60,18 +63,18 @@ class Nimbus_Attendees:
 
 
     @staticmethod
-    def update_attendee_by_uid(uid, user):
-        sql = "UPDATE USERS SET first_name=%s, last_name=%s, email_address=%s, birth_date=%s, phone=%s, gender=%s WHERE guid=%s;"
+    def update_attendee_by_uid(uid, attendee):
+        sql = "UPDATE contact_info SET first_name=%s, last_name=%s, email_address=%s, birth_date=%s, phone=%s, gender=%s WHERE guid=%s;"
         conn = Nimbus_Attendees._get_connection()
         cur = conn.cursor()
-        res = cur.execute(sql, user.first_name, user.last_name, user.email_address, user.birth_date, user.phone, user.gender)
+        res = cur.execute(sql, attendee.first_name, attendee.last_name, attendee.email_address, attendee.birth_date, attendee.phone, attendee.gender, uid)
         result = cur.fetchone()
         return result
 
 
     @staticmethod
     def delete_attendee_by_uid(uid):
-        sql = "DELETE FROM USERS WHERE guid=%s;"
+        sql = "DELETE FROM contact_info WHERE guid=%s;"
         conn = Nimbus_Attendees._get_connection()
         cur = conn.cursor()
         res = cur.execute(sql, args=uid)

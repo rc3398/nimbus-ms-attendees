@@ -50,12 +50,21 @@ CONTENT_TYPE_PLAIN_TEXT = "text/plain"
 
 @app.route("/attendees", methods=["POST"])
 def create_attendee(attendee):
-    print(f'My secret is: {attendee}')
-    return ""
+    print(f'Input is: {attendee}')
+    result = Nimbus_Attendees.create_attendee(attendee)
+    
+    if result:
+      response = Response(json.dumps(result), status=200,
+                        content_type=CONTENT_TYPE_JSON)
+    else:
+        response = Response("Invalid Input: Could not create attendee", status=500,
+                            content_type=CONTENT_TYPE_PLAIN_TEXT)
+    return response
 
 
 @app.route("/attendees/<uid>", methods=["GET"])
 def get_attendee_by_uid(uid):
+    print(f'Input is: {uid}')
     result = Nimbus_Attendees.get_by_uid(uid)
 
     if result:
