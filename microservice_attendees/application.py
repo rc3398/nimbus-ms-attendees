@@ -99,7 +99,13 @@ def update_attendee_by_uid(uid):
 def delete_attendee_by_uid(uid):
     print(f'Input is: {uid}')
     result = Nimbus_Attendees.delete_attendee_by_uid(uid) 
-    #no return value
+    if result:
+        response = Response(json.dumps(result,default=str), status=200,
+                            content_type=CONTENT_TYPE_JSON)
+    else:
+        response = Response("NOT FOUND", status=404,
+                            content_type=CONTENT_TYPE_PLAIN_TEXT)
+    return response
 
 
 class AWS_Exception(Exception):

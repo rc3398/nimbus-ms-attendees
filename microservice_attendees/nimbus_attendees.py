@@ -80,8 +80,10 @@ class Nimbus_Attendees:
         conn = Nimbus_Attendees._get_connection()
         cur = conn.cursor()
         res = cur.execute(sql, args=uid)
-        result = cur.fetchone()
-        return result
+        if res == 1:
+            return f'Deleted id : {uid}'
+        else:
+            return f'attendee_id : {uid} does not exist'
 
 if __name__ == "__main__":
     
