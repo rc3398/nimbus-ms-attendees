@@ -1,7 +1,6 @@
 from flask import Flask, Response, request,  abort, jsonify, session
 from datetime import datetime
 from flask_marshmallow import Marshmallow
-from flask_sqlalchemy import SQLAlchemy
 from nimbus_attendees import Nimbus_Attendees
 from flask_cors import CORS
 import json

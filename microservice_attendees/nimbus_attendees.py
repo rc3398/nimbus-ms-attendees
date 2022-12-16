@@ -82,15 +82,13 @@ class Nimbus_Attendees:
         return result
 
 if __name__ == "__main__":
-    
-   nimbus = Nimbus_Attendees()
-   conn = Nimbus_Attendees._get_connection()
-   cur = conn.cursor()
-   try:
-       if cur.connection:
-            print("Connected")
-       else:
-           print("No connection")
-   except Exception as e:
-       print(str(e))
-   
+    nimbus = Nimbus_Attendees()
+    conn = Nimbus_Attendees._get_connection()
+    cur = conn.cursor()
+    try:
+        if cur.connection:
+              print("Connected")
+        else:
+            print("No connection")
+    except Exception as e:
+        print(str(e))
