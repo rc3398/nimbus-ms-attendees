@@ -1,7 +1,7 @@
 from flask import Flask, Response, request,  abort, jsonify, session
 from datetime import datetime
-from flask_marshmallow import Marshmallow
-from flask_sqlalchemy import SQLAlchemy
+#from flask_marshmallow import Marshmallow
+#from flask_sqlalchemy import SQLAlchemy
 from nimbus_attendees import Nimbus_Attendees
 from flask_cors import CORS
 import json
@@ -65,10 +65,9 @@ def create_attendee(attendee):
 @app.route("/attendees/<uid>", methods=["GET"])
 def get_attendee_by_uid(uid):
     print(f'Input is: {uid}')
-    result = Nimbus_Attendees.get_by_uid(uid)
-
+    result = Nimbus_Attendees.get_attendee_by_uid(uid)
     if result:
-        response = Response(json.dumps(result), status=200,
+        response = Response(json.dumps(result,default=str), status=200,
                             content_type=CONTENT_TYPE_JSON)
     else:
         response = Response("NOT FOUND", status=404,
@@ -77,13 +76,16 @@ def get_attendee_by_uid(uid):
 
 
 @app.route("/attendees/<uid>", methods=["PUT"])
-def update_attendee_by_uid():
+def update_attendee_by_uid(uid):
+    print(f'Input is: {uid}')
     return ""
 
 
 @app.route("/attendees/<uid>", methods=["DELETE"])
-def delete_attendee_by_uid():
-    return ""
+def delete_attendee_by_uid(uid):
+    print(f'Input is: {uid}')
+    result = Nimbus_Attendees.delete_attendee_by_uid(uid) 
+    #no return value
 
 
 class AWS_Exception(Exception):

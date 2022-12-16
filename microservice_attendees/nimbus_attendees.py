@@ -4,8 +4,9 @@ import os
 
 class Nimbus_Attendees:
 
-    def __int__(self):
-        self.cursor = self._get_connection().cursor()
+    def __init__(self):
+        #self.cursor = self._get_connection().cursor()
+        pass
 
     @staticmethod
     def _get_connection():
@@ -25,6 +26,7 @@ class Nimbus_Attendees:
             user=usr,
             password=pw,
             host=h,
+            database='attendee',
             cursorclass=pymysql.cursors.DictCursor,
             autocommit=True
         )
@@ -48,13 +50,13 @@ class Nimbus_Attendees:
         conn = Nimbus_Attendees._get_connection()
         cur = conn.cursor()
         res = cur.execute(sql)
-        result = cur.fetchone()
+        result = cur.fetchall()
         return result
 
 
     @staticmethod
     def get_attendee_by_uid(uid):
-        sql = "SELECT * FROM contact_info WHERE guid=%s"
+        sql = "SELECT * FROM contact_info WHERE attendee_id=%s"
         conn = Nimbus_Attendees._get_connection()
         cur = conn.cursor()
         res = cur.execute(sql, args=uid)
@@ -74,7 +76,7 @@ class Nimbus_Attendees:
 
     @staticmethod
     def delete_attendee_by_uid(uid):
-        sql = "DELETE FROM contact_info WHERE guid=%s;"
+        sql = "DELETE FROM contact_info WHERE attendee_id=%s;"
         conn = Nimbus_Attendees._get_connection()
         cur = conn.cursor()
         res = cur.execute(sql, args=uid)
@@ -89,6 +91,11 @@ if __name__ == "__main__":
    try:
        if cur.connection:
             print("Connected")
+            print("Testing get_all_attendee")
+            for i in nimbus.get_all_attendees():
+                print(i)
+            print("testing creating a user")
+            print(nimbus.get_attendee_by_uid('aarger0@fda.gov'))
        else:
            print("No connection")
    except Exception as e:
