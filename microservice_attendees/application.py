@@ -3,6 +3,7 @@ from datetime import datetime
 #from flask_marshmallow import Marshmallow
 #from flask_sqlalchemy import SQLAlchemy
 from nimbus_attendees import Nimbus_Attendees
+from model.attendee import Attendee, AttendeeSchema
 from flask_cors import CORS
 import json
 # import rds_db as db
@@ -50,11 +51,24 @@ CONTENT_TYPE_PLAIN_TEXT = "text/plain"
 
 @app.route("/attendees", methods=["POST"])
 def create_attendee(attendee):
-    print(f'Input is: {attendee}')
-    result = Nimbus_Attendees.create_attendee(attendee)
     
-    if result:
-      response = Response(json.dumps(result), status=200,
+    # TODO: store this in an object ORM
+    print(f'Input is: {attendee}')
+    first_name = json.request['first_name']
+    last_name = json.request['last_name']
+    gender = json.request['gender']
+    gender = str.upper(gender)
+    birth_date = json.request['birth_date']
+    phone = json.request['phone']
+    email_address = json.request['email_address']
+    attendee_id = email_address
+    
+    new_attendee = Attendee(first_name, last_name, gender, email_address, birth_date, phone, attendee_id)
+    
+    db_result = Nimbus_Attendees.create_attendee(new_attendee)
+    
+    if db_result:
+      response = Response(AttendeeSchema.dumps(db_result), status=200,
                         content_type=CONTENT_TYPE_JSON)
     else:
         response = Response("Invalid Input: Could not create attendee", status=500,

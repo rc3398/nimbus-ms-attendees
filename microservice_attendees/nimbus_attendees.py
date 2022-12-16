@@ -36,10 +36,10 @@ class Nimbus_Attendees:
 
     @staticmethod
     def create_attendee(attendee):
-        sql = "INSERT INTO contact_info (first_name, last_name, email_address, birth_date, phone, gender) VALUES (%s,%s,%s,%s,%s,%s);"
+        sql = "INSERT INTO contact_info (first_name, last_name, email_address, birth_date, phone, gender, attendee_id) VALUES (%s,%s,%s,%s,%s,%s,%s);"
         conn = Nimbus_Attendees._get_connection()
         cur = conn.cursor()
-        res = cur.execute(sql, attendee.first_name, attendee.last_name, attendee.email_address, attendee.birth_date, attendee.phone, attendee.gender)
+        res = cur.execute(sql, attendee.first_name, attendee.last_name, attendee.email_address, attendee.birth_date, attendee.phone, attendee.gender, attendee.email_address)
         result = cur.fetchone()
         return result
 
@@ -66,10 +66,10 @@ class Nimbus_Attendees:
 
     @staticmethod
     def update_attendee_by_uid(uid, attendee):
-        sql = "UPDATE contact_info SET first_name=%s, last_name=%s, email_address=%s, birth_date=%s, phone=%s, gender=%s WHERE guid=%s;"
+        sql = "UPDATE contact_info SET first_name=%s, last_name=%s, email_address=%s, birth_date=%s, phone=%s, gender=%s, attendee_id=% WHERE guid=%s;"
         conn = Nimbus_Attendees._get_connection()
         cur = conn.cursor()
-        res = cur.execute(sql, attendee.first_name, attendee.last_name, attendee.email_address, attendee.birth_date, attendee.phone, attendee.gender, uid)
+        res = cur.execute(sql, attendee.first_name, attendee.last_name, attendee.email_address, attendee.birth_date, attendee.phone, attendee.gender, attendee.email_address, uid)
         result = cur.fetchone()
         return result
 

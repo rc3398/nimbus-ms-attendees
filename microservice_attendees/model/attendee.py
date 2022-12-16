@@ -15,13 +15,16 @@ class Attendee(object):
         return '<attendee(name={self.input_index!r})>'.format(self=self)
     
 class AttendeeSchema(Schema):
-    attendee_id = fields.Str()
+      # class Meta:
+      #     fields = ('attendee_id', 'first_name', 'last_name', 'email_address', 'birth_date', 'phone', 'gender')
+    
     first_name = fields.Str()
     last_name = fields.Str()
     email_address = fields.Str()
     birth_date = fields.Str()
     phone = fields.Str()
     gender = fields.Enum()
+    attendee_id = fields.Str()
     
     @post_load
     def get_attendee(self, data, **kwargs):
