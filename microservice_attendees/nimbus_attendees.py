@@ -5,7 +5,7 @@ import os
 class Nimbus_Attendees:
 
     def __int__(self):
-        pass
+        self.cursor = self._get_connection().cursor()
 
     @staticmethod
     def _get_connection():
