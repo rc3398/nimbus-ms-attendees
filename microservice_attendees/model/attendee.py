@@ -1,10 +1,11 @@
 from marshmallow import Schema, fields, post_load
+from marshmallow_enum import EnumField
 from enum import Enum
 
 class Attendee(object):
-    def __init__(self, attendee_id, first_name, last_name, gender, 
+    def __init__(self, first_name, last_name, gender, 
                  email_address, birth_date, phone):
-        self.attendee_id = attendee_id
+        self.attendee_id = email_address
         self.first_name = first_name
         self.last_name = last_name
         self.email_address = email_address
@@ -29,7 +30,7 @@ class AttendeeSchema(Schema):
     email_address = fields.Str()
     birth_date = fields.Str()
     phone = fields.Str()
-    gender = fields.Enum(enum=Gender, by_value=True)
+    gender = EnumField(Gender, by_value=True)
     attendee_id = fields.Str()
     
     @post_load

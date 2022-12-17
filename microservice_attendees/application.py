@@ -1,5 +1,7 @@
 from flask import Flask, Response, request,  abort, jsonify, session
 from datetime import datetime
+
+from marshmallow import ValidationError
 #from flask_marshmallow import Marshmallow
 #from flask_sqlalchemy import SQLAlchemy
 from nimbus_attendees import Nimbus_Attendees
@@ -45,30 +47,36 @@ def after_request_func():
 
 """
 
-CONTENT_TYPE_JSON = "application/json"
-CONTENT_TYPE_PLAIN_TEXT = "text/plain"
-
-
-@app.route("/attendees", methods=["POST"])
-def create_attendee(attendee):
+@app.route("/attendees/", methods=["POST"])
+def create_attendee():
     
     # TODO: store this in an object ORM
-    print(f'Input is: {attendee}')
-    first_name = json.request['first_name']
-    last_name = json.request['last_name']
-    gender = json.request['gender']
-    gender = str.upper(gender)
-    birth_date = json.request['birth_date']
-    phone = json.request['phone']
-    email_address = json.request['email_address']
-    attendee_id = email_address
+    json_input = request.get_json()
+    print(f'Input is: {json_input}')
+    # first_name = attendee['first_name']
+    # last_name = json.request['last_name']
+    # gender = json.request['gender']
+    # gender = str.upper(gender)
+    # birth_date = json.request['birth_date']
+    # phone = json.request['phone']
+    # email_address = json.request['email_address']
+    # attendee_id = email_address
     
-    new_attendee = Attendee(first_name, last_name, gender, email_address, birth_date, phone, attendee_id)
+    if not json_input:
+        return {"message": "No input data provided"}, 400
+    # Validate and deserialize input
+    try:
+        attendee_schema = AttendeeSchema(many=False)
+        new_attendee = attendee_schema.load(json_input)
+    except ValidationError as err:
+        return {"errors": err.messages}, 422
+    
+    # new_attendee = Attendee(first_name, last_name, gender, email_address, birth_date, phone, attendee_id)
     
     db_result = Nimbus_Attendees.create_attendee(new_attendee)
     
     if db_result:
-      response = Response(AttendeeSchema.dumps(db_result), status=200,
+      response = Response(attendee_schema.dumps(db_result), status=200,
                         content_type=CONTENT_TYPE_JSON)
     else:
         response = Response("Invalid Input: Could not create attendee", status=500,
