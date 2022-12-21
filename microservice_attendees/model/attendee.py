@@ -11,7 +11,7 @@ class Attendee(object):
         self.email_address = email_address
         self.birth_date = birth_date
         self.phone = phone
-        self.gender = gender
+        self.gender = gender.name
         
     def __repr__(self):
         return '<attendee(name={self.input_index!r})>'.format(self=self)
@@ -30,7 +30,7 @@ class AttendeeSchema(Schema):
     email_address = fields.Str()
     birth_date = fields.Str()
     phone = fields.Str()
-    gender = EnumField(Gender, by_value=True)
+    gender = EnumField(Gender, by_value=False)
     attendee_id = fields.Str()
     
     @post_load

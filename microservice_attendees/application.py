@@ -68,6 +68,7 @@ def create_attendee():
     try:
         attendee_schema = AttendeeSchema(many=False)
         new_attendee = attendee_schema.load(json_input)
+        print(vars(new_attendee))
     except ValidationError as err:
         return {"errors": err.messages}, 422
     

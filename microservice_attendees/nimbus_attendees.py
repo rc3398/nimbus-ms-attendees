@@ -19,8 +19,6 @@ class Nimbus_Attendees:
         pw = 'dbpassword'
         h = 'nimbus-db.c4dwsoa8ic0w.us-east-1.rds.amazonaws.com'
         
-        
-        
         conn = pymysql.connect(
             port=3306,
             user=usr,
@@ -36,10 +34,10 @@ class Nimbus_Attendees:
 
     @staticmethod
     def create_attendee(attendee):
-        cur = conn.cursor()
-        attendee.gender = 
-        sql = "INSERT INTO contact_info (first_name, last_name, email_address, birth_date, phone, gender, attendee_id) VALUES (%s,%s,%s,%s,%s,%s,%s);"
         conn = Nimbus_Attendees._get_connection()
+        cur = conn.cursor()
+        attendee.gender = attendee.gender.name
+        sql = "INSERT INTO contact_info (first_name, last_name, email_address, birth_date, phone, gender, attendee_id) VALUES (%s,%s,%s,%s,%s,%s,%s);"
         args = (attendee.first_name, attendee.last_name, attendee.email_address, attendee.birth_date, attendee.phone, attendee.gender, attendee.email_address)
         result = cur.execute(sql, args=args)
         #result = cur.fetchone()
@@ -88,20 +86,18 @@ class Nimbus_Attendees:
             return f'attendee_id : {uid} does not exist'
 
 if __name__ == "__main__":
-    
-   nimbus = Nimbus_Attendees()
-   conn = Nimbus_Attendees._get_connection()
-   cur = conn.cursor()
-   try:
-       if cur.connection:
-            print("Connected")
-            print("Testing get_all_attendee")
-            for i in nimbus.get_all_attendees():
-                print(i)
-            print("testing creating a user")
-            print(nimbus.get_attendee_by_uid('aarger0@fda.gov'))
-       else:
-           print("No connection")
-   except Exception as e:
-       print(str(e))
-   
+    nimbus = Nimbus_Attendees()
+    conn = Nimbus_Attendees._get_connection()
+    cur = conn.cursor()
+    try:
+        if cur.connection:
+              print("Connected")
+              print("Testing get_all_attendee")
+              for i in nimbus.get_all_attendees():
+                  print(i)
+              print("testing creating a user")
+              print(nimbus.get_attendee_by_uid('aarger0@fda.gov'))
+        else:
+            print("No connection")
+    except Exception as e:
+        print(str(e))
