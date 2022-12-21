@@ -1,14 +1,14 @@
+import json, sentry_sdk
 from flask import Flask, Response, request,  abort, jsonify, session
 from datetime import datetime
-
+from email_validator import validate_email, EmailNotValidError
 from marshmallow import ValidationError
-#from flask_marshmallow import Marshmallow
-#from flask_sqlalchemy import SQLAlchemy
 from nimbus_attendees import Nimbus_Attendees
-from model.attendee import Attendee, AttendeeSchema
+from model.attendee import AttendeeSchema
 from flask_cors import CORS
-import json
-# import rds_db as db
+from sentry_sdk.integrations.flask import FlaskIntegration
+from sentry_sdk import capture_exception
+
 
 # Create the Flask application object.
 application = app = Flask(__name__,
@@ -17,15 +17,21 @@ application = app = Flask(__name__,
                           template_folder='web/templates')
 CORS(app)
 
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:''@localhost/db_name'
-#db = SQLAlchemy(app)
-#ma = Marshmallow(app)
 
 # TODO: Add caching
-
 # TODO: store these constants in a shared file
 CONTENT_TYPE_JSON = "application/json"
 CONTENT_TYPE_PLAIN_TEXT = "text/plain"
+
+
+sentry_sdk.init(
+    dsn="https://e5b945e2a05647c3bcb9fe454e7b6249@o4504313332170752.ingest.sentry.io/4504369353326592",
+    traces_sample_rate=1.0,
+    integrations=[
+        FlaskIntegration(),
+    ]
+)
+
 
 # TODO: add middleware to check if requestor is authorized to make this call
 """
@@ -53,14 +59,6 @@ def create_attendee():
     # TODO: store this in an object ORM
     json_input = request.get_json()
     print(f'Input is: {json_input}')
-    # first_name = attendee['first_name']
-    # last_name = json.request['last_name']
-    # gender = json.request['gender']
-    # gender = str.upper(gender)
-    # birth_date = json.request['birth_date']
-    # phone = json.request['phone']
-    # email_address = json.request['email_address']
-    # attendee_id = email_address
     
     if not json_input:
         return {"message": "No input data provided"}, 400
@@ -68,11 +66,11 @@ def create_attendee():
     try:
         attendee_schema = AttendeeSchema(many=False)
         new_attendee = attendee_schema.load(json_input)
-        print(vars(new_attendee))
+        is_email = validate_the_email(new_attendee.email_address)
+
     except ValidationError as err:
+        capture_exception(err)
         return {"errors": err.messages}, 422
-    
-    # new_attendee = Attendee(first_name, last_name, gender, email_address, birth_date, phone, attendee_id)
     
     db_result = Nimbus_Attendees.create_attendee(new_attendee)
     
@@ -88,9 +86,10 @@ def create_attendee():
 @app.route("/attendees/<uid>", methods=["GET"])
 def get_attendee_by_uid(uid):
     print(f'Input is: {uid}')
-    result = Nimbus_Attendees.get_attendee_by_uid(uid)
-    if result:
-        response = Response(json.dumps(result,default=str), status=200,
+    db_result = Nimbus_Attendees.get_attendee_by_uid(uid)
+    
+    if db_result:
+        response = Response(json.dumps(db_result,default=str), status=200,
                             content_type=CONTENT_TYPE_JSON)
     else:
         response = Response("NOT FOUND", status=404,
@@ -139,6 +138,17 @@ def resource_not_found(e):
 @app.errorhandler(AWS_Exception)
 def aws_exception(e):
     return jsonify(e.to_dict()), e.status_code
+
+
+def validate_the_email(email_address):
+    try:
+        is_email = validate_email(email_address, check_deliverability=False)
+        print(vars(is_email))
+        return is_email
+    except EmailNotValidError as e:
+        print(str(e))
+        capture_exception(e)
+        raise(e)
 
 
 if __name__ == '__main__':

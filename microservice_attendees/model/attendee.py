@@ -5,10 +5,11 @@ from enum import Enum
 class Attendee(object):
     def __init__(self, first_name, last_name, gender, 
                  email_address, birth_date, phone):
-        self.attendee_id = email_address
+        email = str.lower(email_address)
+        self.attendee_id = email
         self.first_name = first_name
         self.last_name = last_name
-        self.email_address = email_address
+        self.email_address = email
         self.birth_date = birth_date
         self.phone = phone
         self.gender = gender.name
