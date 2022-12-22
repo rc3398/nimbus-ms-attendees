@@ -1,5 +1,6 @@
 import pymysql
 from sentry_sdk import capture_exception
+from model.attendee import Attendee
 
 class Nimbus_Attendees:
 
@@ -82,12 +83,11 @@ class Nimbus_Attendees:
 
     @staticmethod
     def update_attendee_by_uid(uid, attendee):
-        sql = "UPDATE contact_info SET first_name=%s, last_name=%s, email_address=%s, birth_date=%s, phone=%s, gender=%s, attendee_id=% WHERE guid=%s;"
+        sql = "UPDATE contact_info SET first_name=%s, last_name=%s, birth_date=%s, phone=%s, gender=%s WHERE attendee_id=%s;"
         conn = Nimbus_Attendees._get_connection()
         cur = conn.cursor()
-        res = cur.execute(sql, attendee.first_name, attendee.last_name, attendee.email_address, attendee.birth_date, attendee.phone, attendee.gender, attendee.email_address, uid)
-        result = cur.fetchone()
-        return result
+        res = cur.execute(sql, (attendee.first_name, attendee.last_name,attendee.birth_date, attendee.phone, attendee.gender,uid))
+        return res
 
 
     @staticmethod
@@ -109,10 +109,15 @@ if __name__ == "__main__":
         if cur.connection:
             print("Connected")
             print("Testing get_all_attendee")
-            for i in nimbus.get_all_attendees():
-                print(i)
+            #for i in nimbus.get_all_attendees():
+            #    print(i)
             # print("testing creating a user")
             # print(nimbus.get_attendee_by_uid('lcusty2@ehow.com'))
+            print('Testing update')
+            new_up = Attendee('John2','Cena2','Female','johncena2@gmail.com','2005-02-03','917-623-6790')
+            nimbus.update_attendee_by_uid('johncena2@gmail.com',new_up)
+            print('get')
+            print(nimbus.get_attendee_by_uid('johncena2@gmail.com')) 
         else:
             print("No connection")
     except Exception as e:

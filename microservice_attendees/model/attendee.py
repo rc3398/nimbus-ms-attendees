@@ -12,7 +12,7 @@ class Attendee(object):
         self.email_address = email
         self.birth_date = birth_date
         self.phone = phone
-        self.gender = gender.name
+        self.gender = gender
         
     def __repr__(self):
         return '<attendee(name={self.input_index!r})>'.format(self=self)
