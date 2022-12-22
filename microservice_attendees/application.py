@@ -1,20 +1,28 @@
 import json, sentry_sdk
 from flask import Flask, Response, request,  abort, jsonify, session
+from flask_restx import Resource, Api, fields, inputs
 from datetime import datetime
 from email_validator import validate_email, EmailNotValidError
 from marshmallow import ValidationError
 from nimbus_attendees import Nimbus_Attendees
-from model.attendee import AttendeeSchema
+from model.attendee import Attendee, AttendeeSchema
 from flask_cors import CORS
 from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk import capture_exception
-
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 # Create the Flask application object.
 application = app = Flask(__name__,
                           static_url_path='/',
                           static_folder='static/class-ui/',
                           template_folder='web/templates')
+app.wsgi_app = ProxyFix(app.wsgi_app)
+api = Api(app, version='1.0', 
+          title='Nimbus Attendees API',
+          description='Nimbus APIs for Attendee CRUD operations',
+          default='ms-attendees',
+          default_label='ms-attendees',
+)
 CORS(app)
 
 
@@ -53,98 +61,123 @@ def after_request_func():
 
 """
 
-@app.route("/attendees/", methods=["POST"])
-def create_attendee():
-    
-    # TODO: store this in an object ORM
-    json_input = request.get_json()
-    print(f'Input is: {json_input}')
-    
-    if not json_input:
-        return {"message": "No input data provided"}, 400
-    # Validate and deserialize input
-    try:
-        attendee_schema = AttendeeSchema(many=False)
-        new_attendee = attendee_schema.load(json_input)
-        is_email = validate_the_email(new_attendee.email_address)
+attendee_model = api.model('Attendee', {
+    'uid': fields.String(required=False, description="Attendee ID. Omitted for Create, Update."),
+    'first_name': fields.String(description=""),
+    'last_name': fields.String(description=""),
+    'email_address': fields.String(description=""),
+    'birth_date': fields.String(description="YYYY-MM-DD"),
+    'phone': fields.String(description="XXX-XXX-XXXX"),
+    'gender': fields.String(description="[MALE, FEMALE, OTHER]"),
+})
 
-    except ValidationError as err:
-        capture_exception(err)
-        return {"errors": err.messages}, 422
-    
-    db_result = Nimbus_Attendees.create_attendee(new_attendee)
-    
-    if db_result:
-      response = Response(attendee_schema.dumps(db_result), status=200,
-                        content_type=CONTENT_TYPE_JSON)
-    else:
-        response = Response("Invalid Input: Could not create attendee", status=500,
-                            content_type=CONTENT_TYPE_PLAIN_TEXT)
-    return response
+@api.route("/<string:uid>")
+class Attendees(Resource):
 
-
-@app.route("/attendees/<uid>", methods=["GET"])
-def get_attendee_by_uid(uid):
-    print(f'Input is: {uid}')
-    db_result = Nimbus_Attendees.get_attendee_by_uid(uid)
-    
-    if db_result:
-        response = Response(json.dumps(db_result,default=str), status=200,
-                            content_type=CONTENT_TYPE_JSON)
-    else:
-        response = Response("NOT FOUND", status=404,
-                            content_type=CONTENT_TYPE_PLAIN_TEXT)
-    return response
-
-
-@app.route("/attendees/<uid>", methods=["PUT"])
-def update_attendee_by_uid(uid):
-    json_input = request.get_json()
-    print(f'Input is: {json_input} for uuid {uid}')
-    
-    if not json_input:
-        return {"message": "No input data provided"}, 400
-    # Validate and deserialize input
-    try:
-        attendee_schema = AttendeeSchema(many=False)
-        up_attendee = attendee_schema.load(json_input)
-        print(str(up_attendee.gender))
-        if 'Male'.lower() in str(up_attendee.gender).lower():
-            up_attendee.gender = 'Male'
-        elif 'Female'.lower() in str(up_attendee.gender).lower():
-            up_attendee.gender = 'Female'
-        else:
-            up_attendee.gender = 'Other'
+    @api.doc(id='Get attendee by uid', params={'uid': 'Attendee ID'})
+    @api.doc(responses={
+        200: 'Success',
+        404: 'Not Found',
+        500: 'Internal Server Error'
+    })
+    def get(self, uid):
+        print(f'Input is: {uid}')
+        db_result = Nimbus_Attendees.get_attendee_by_uid(uid)
         
-        print(up_attendee.gender)
-        is_email = validate_the_email(up_attendee.email_address)
+        if db_result:
+            response = Response(json.dumps(db_result,default=str), status=200,
+                                content_type=CONTENT_TYPE_JSON)
+        else:
+            response = Response("NOT FOUND", status=404,
+                                content_type=CONTENT_TYPE_PLAIN_TEXT)
+        return response
 
-    except ValidationError as err:
-        capture_exception(err)
-        return {"errors": err.messages}, 422
+
+    @api.doc(id='Update attendee by uid', params={'uid': 'Attendee ID'}, body=attendee_model)
+    # @api.expect(resource_fields)
+    @api.doc(responses={
+        200: 'Success',
+        404: 'Not Found',
+        500: 'Internal Server Error'
+    })
+    def put(self, uid):
+        json_input = request.get_json()
+        print(f'Input is: {uid}, {json_input}')
+        return ""
+
+
+    @api.doc(id='Delete attendee by uid', params={'uid': 'Attendee ID'})
+    @api.doc(responses={
+        200: 'Success',
+        404: 'Not Found',
+        500: 'Internal Server Error'
+    })
+    def delete(self, uid):
+        print(f'Input is: {uid}')
+        result = Nimbus_Attendees.delete_attendee_by_uid(uid) 
+        if result:
+            response = Response(json.dumps(result,default=str), status=200,
+                                content_type=CONTENT_TYPE_JSON)
+        else:
+            response = Response("NOT FOUND", status=404,
+                                content_type=CONTENT_TYPE_PLAIN_TEXT)
+        return response
+
+
+@api.route("/attendees-list")
+class AttendeesList(Resource):
     
-    db_result = Nimbus_Attendees.update_attendee_by_uid(uid,up_attendee)
-    
-    if db_result:
-      response = Response(attendee_schema.dumps(db_result), status=200,
-                        content_type=CONTENT_TYPE_JSON)
-    else:
-        response = Response("Invalid Input: Could not update attendee", status=500,
-                          content_type=CONTENT_TYPE_PLAIN_TEXT)
-    return response
+    @api.doc(id='Create new attendee', body=attendee_model)
+    @api.doc(responses={
+        202: 'Created',
+        422: 'Validation Error',
+        500: 'Server Error'
+    })
+    def post(self):
+        json_input = request.get_json()
+        print(f'Input is: {json_input}')
+        
+        if not json_input:
+            return {"message": "No input data provided"}, 400
+        try:
+            attendee_schema = AttendeeSchema(many=False)
+            new_attendee = attendee_schema.load(json_input)
+            print(vars(new_attendee))
+            is_email = validate_the_email(new_attendee.email_address)
 
-
-@app.route("/attendees/<uid>", methods=["DELETE"])
-def delete_attendee_by_uid(uid):
-    print(f'Input is: {uid}')
-    result = Nimbus_Attendees.delete_attendee_by_uid(uid) 
-    if result:
-        response = Response(json.dumps(result,default=str), status=200,
+        except ValidationError as err:
+            capture_exception(err)
+            return {"errors": err.messages}, 422
+        
+        db_result = Nimbus_Attendees.create_attendee(new_attendee)
+        
+        if db_result:
+          response = Response(attendee_schema.dumps(db_result), status=201,
                             content_type=CONTENT_TYPE_JSON)
-    else:
-        response = Response("NOT FOUND", status=404,
-                            content_type=CONTENT_TYPE_PLAIN_TEXT)
-    return response
+        else:
+            response = Response("Invalid Input: Could not create attendee", status=500,
+                                content_type=CONTENT_TYPE_PLAIN_TEXT)
+        return response
+    
+    
+    # TODO: Add pagination 
+    @api.doc(id='Get list of attendees, PAGINATED')
+    @api.marshal_list_with(attendee_model)
+    @api.doc(responses={
+        200: 'Success',
+        500: 'Internal Server Error'
+    })
+    def get(self):
+        print(f'Input is: ')
+        db_result = Nimbus_Attendees.get_all_attendees()
+        
+        if db_result:
+            response = Response(json.dumps(db_result,default=str), status=200,
+                                content_type=CONTENT_TYPE_JSON)
+        else:
+            response = Response("ERROR", status=500,
+                                content_type=CONTENT_TYPE_PLAIN_TEXT)
+        return response
 
 
 class AWS_Exception(Exception):
@@ -155,6 +188,7 @@ class AWS_Exception(Exception):
         if status_code is not None:
             self.status_code = status_code
         self.payload = payload
+    
     def to_dict(self):
         rv = dict(self.payload or ())
         rv['message'] = self.message

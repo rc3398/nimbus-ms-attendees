@@ -26,13 +26,13 @@ class AttendeeSchema(Schema):
         FEMALE = 2
         OTHER = 3
     
-    first_name = fields.Str()
-    last_name = fields.Str()
-    email_address = fields.Str()
-    birth_date = fields.Str()
-    phone = fields.Str()
-    gender = EnumField(Gender, by_value=False)
-    attendee_id = fields.Str()
+    first_name = fields.Str(required=True)
+    last_name = fields.Str(required=True)
+    email_address = fields.Email(required=True)
+    birth_date = fields.Str(required=True)
+    phone = fields.Str(required=True)
+    gender = EnumField(Gender, by_value=False, required=True)
+    attendee_id = fields.Str(required=False)
     
     @post_load
     def get_attendee(self, data, **kwargs):
