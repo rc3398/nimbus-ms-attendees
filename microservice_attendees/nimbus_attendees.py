@@ -87,7 +87,10 @@ class Nimbus_Attendees:
         conn = Nimbus_Attendees._get_connection()
         cur = conn.cursor()
         res = cur.execute(sql, (attendee.first_name, attendee.last_name,attendee.birth_date, attendee.phone, attendee.gender,uid))
-        return res
+        if res:
+            return Nimbus_Attendees.get_attendee_by_uid(uid)
+        else:
+            return None
 
 
     @staticmethod

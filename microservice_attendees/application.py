@@ -102,8 +102,41 @@ class Attendees(Resource):
     })
     def put(self, uid):
         json_input = request.get_json()
-        print(f'Input is: {uid}, {json_input}')
-        return ""
+        print(f'Input is: {json_input}')
+        if not json_input:
+            return {"message": "No input data provided"}, 400
+        # Validate and deserialize input
+        try:
+            attendee_schema = AttendeeSchema(many=False)
+            up_attendee = attendee_schema.load(json_input)
+            print(str(up_attendee.gender))
+            if 'Male'.lower() in str(up_attendee.gender).lower():
+                up_attendee.gender = 'Male'
+            elif 'Female'.lower() in str(up_attendee.gender).lower():
+                up_attendee.gender = 'Female'
+            else:
+                up_attendee.gender = 'Other'
+            
+            print(up_attendee.gender)
+            is_email = validate_the_email(up_attendee.email_address)
+
+        except ValidationError as err:
+            capture_exception(err)
+            return {"errors": err.messages}, 422
+    
+        db_result = Nimbus_Attendees.update_attendee_by_uid(uid,up_attendee)
+        
+        if db_result != 0:
+            response = Response(attendee_schema.dumps(db_result), status=200,
+                                content_type=CONTENT_TYPE_JSON)
+        else:
+            response = Response(f'Invalid Input: Could not update attendee {uid}', status=500,
+                            content_type=CONTENT_TYPE_PLAIN_TEXT)
+        return response
+
+
+
+
 
 
     @api.doc(id='Delete attendee by uid', params={'uid': 'Attendee ID'})
