@@ -1,20 +1,19 @@
-import json, sentry_sdk
+import json, sentry_sdk, copy
 from flask import Flask, Response, request,  abort, jsonify, session
 from flask_restx import Resource, Api, fields, inputs
 from datetime import datetime
 from email_validator import validate_email, EmailNotValidError
-from marshmallow import ValidationError
+from marshmallow import (ValidationError, Schema, post_load )
 from nimbus_attendees import Nimbus_Attendees
 from model.attendee import Attendee, AttendeeSchema
 from flask_cors import CORS
 from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk import capture_exception
 from werkzeug.middleware.proxy_fix import ProxyFix
-from marshmallow import Schema, post_load
 from marshmallow_enum import EnumField
 from flask_marshmallow import Marshmallow
 from enum import Enum
-import copy
+from flask_jwt_extended import jwt_required, current_user
 
 # Create the Flask application object.
 application = app = Flask(__name__,
@@ -85,6 +84,7 @@ class Attendees(Resource):
         404: 'Not Found',
         500: 'Internal Server Error'
     })
+    # @jwt_required()
     def get(self, uid):
         print(f'Input is: {uid}')
         db_result = Nimbus_Attendees.get_attendee_by_uid(uid)
