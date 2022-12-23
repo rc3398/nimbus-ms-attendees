@@ -13,7 +13,8 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from marshmallow_enum import EnumField
 from flask_marshmallow import Marshmallow
 from enum import Enum
-from flask_jwt_extended import jwt_required, current_user
+from flask_jwt_extended import ( jwt_required, current_user, get_jwt_identity, JWTManager )
+from auth_utils import NimbusJWT_Authentication
 
 # Create the Flask application object.
 application = app = Flask(__name__,
@@ -27,6 +28,9 @@ api = Api(app, version='1.0',
           default='ms-attendees',
           default_label='ms-attendees',
 )
+app.config["JWT_SECRET_KEY"] = "super-secret"  # Change this!
+jwt = JWTManager(app)
+# print(vars(jwt))
 CORS(app)
 ma = Marshmallow(app)
 
@@ -84,9 +88,14 @@ class Attendees(Resource):
         404: 'Not Found',
         500: 'Internal Server Error'
     })
-    # @jwt_required()
-    def get(self, uid):
+    @NimbusJWT_Authentication.id_token_required()
+    def get(self, uid: str) -> Response:
+        auth_header = request.headers['Authorization']
+        print(auth_header)
+        # user_id = get_jwt_identity()
+        # print(vars(user_id))
         print(f'Input is: {uid}')
+        
         db_result = Nimbus_Attendees.get_attendee_by_uid(uid)
         
         attendee_schema_response = AttendeeSchemaResponse(many=False) 
@@ -107,6 +116,7 @@ class Attendees(Resource):
         404: 'Not Found',
         500: 'Internal Server Error'
     })
+    @jwt_required()
     def put(self, uid):
         json_input = request.get_json()
         print(f'Input is: {json_input}')
@@ -152,6 +162,7 @@ class Attendees(Resource):
         404: 'Not Found',
         500: 'Internal Server Error'
     })
+    @jwt_required()
     def delete(self, uid):
         print(f'Input is: {uid}')
         result = Nimbus_Attendees.delete_attendee_by_uid(uid) 
@@ -174,7 +185,7 @@ class AttendeesList(Resource):
         422: 'Validation Error',
         500: 'Server Error'
     })
-    def post(self):
+    def post(self) -> Response:
         json_input = request.get_json()
         print(f'Input is: {json_input}')
         
@@ -208,6 +219,7 @@ class AttendeesList(Resource):
         200: 'Success',
         500: 'Internal Server Error'
     })
+    @jwt_required()
     def get(self):
         print(f'Input is: ')
         db_result = Nimbus_Attendees.get_all_attendees()
