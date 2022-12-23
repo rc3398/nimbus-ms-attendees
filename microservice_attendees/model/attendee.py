@@ -12,8 +12,15 @@ class Attendee(object):
         self.email_address = email
         self.birth_date = birth_date
         self.phone = phone
-        self.gender = gender
+        self.gender = None
         
+        if 'Female'.lower() in str(gender).lower():
+            self.gender = 'FEMALE'
+        elif 'Male'.lower() in str(gender).lower():
+            self.gender = 'MALE'
+        else:
+            self.gender = 'OTHER'
+
     def __repr__(self):
         return '<attendee(name={self.input_index!r})>'.format(self=self)
     

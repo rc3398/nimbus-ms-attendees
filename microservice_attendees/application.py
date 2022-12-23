@@ -202,6 +202,7 @@ class AttendeesList(Resource):
                 json_input['gender'] = 'MALE'
             else:
                 json_input['gender'] = 'OTHER'
+            print(f'This is json after modification : {json_input}')
             attendee_schema = AttendeeSchema(many=False)
             new_attendee = attendee_schema.load(json_input)
             print(vars(new_attendee))
@@ -212,7 +213,6 @@ class AttendeesList(Resource):
             return {"errors": err.messages}, 422
         
         db_result = Nimbus_Attendees.create_attendee(new_attendee)
-        
         if db_result:
           response = Response(attendee_schema.dumps(db_result), status=201,
                             content_type=CONTENT_TYPE_JSON)
@@ -238,7 +238,7 @@ class AttendeesList(Resource):
         attendee_schema_response = AttendeeSchemaResponse(many=True)
         print(f'This is our resp attendee schema: {attendee_schema_response.dumps(db_result,default=str)}')
         if db_result:
-            response = Response(json.dumps(db_result,default=str), status=200,
+            response = Response(attendee_schema_response.dumps(db_result,default=str), status=200,
                                 content_type=CONTENT_TYPE_JSON)
         else:
             response = Response("ERROR", status=500,
@@ -290,6 +290,7 @@ class AttendeeSchemaResponse(Schema):
         {"collection": ma.URLFor('attendees_list'),
          "self":ma.URLFor('attendees_resource',uid='<attendee_id>')} 
     )
+    
 
 
 if __name__ == '__main__':
