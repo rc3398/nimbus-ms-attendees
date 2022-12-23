@@ -103,12 +103,8 @@ class Attendees(Resource):
         404: 'Not Found',
         500: 'Internal Server Error'
     })
-    @NimbusJWT_Authentication.id_token_required()
     def get(self, uid: str) -> Response:
-        auth_header = request.headers['Authorization']
-        print(auth_header)
-        # user_id = get_jwt_identity()
-        # print(vars(user_id))
+        # uid=NimbusJWT_Authentication.get_userid_from_idtoken()
         print(f'Input is: {uid}')
         
         db_result = Nimbus_Attendees.get_attendee_by_uid(uid)
@@ -125,13 +121,11 @@ class Attendees(Resource):
 
 
     @api.doc(id='Update attendee by uid', params={'uid': 'Attendee ID'}, body=attendee_model)
-    # @api.expect(resource_fields)
     @api.doc(responses={
         200: 'Success',
         404: 'Not Found',
         500: 'Internal Server Error'
     })
-    @jwt_required()
     def put(self, uid):
         json_input = request.get_json()
         print(f'Input is: {json_input}')
@@ -167,17 +161,12 @@ class Attendees(Resource):
         return response
 
 
-
-
-
-
     @api.doc(id='Delete attendee by uid', params={'uid': 'Attendee ID'})
     @api.doc(responses={
         200: 'Success',
         404: 'Not Found',
         500: 'Internal Server Error'
     })
-    @jwt_required()
     def delete(self, uid):
         print(f'Input is: {uid}')
         result = Nimbus_Attendees.delete_attendee_by_uid(uid) 
@@ -234,7 +223,6 @@ class AttendeesList(Resource):
         200: 'Success',
         500: 'Internal Server Error'
     })
-    @jwt_required()
     def get(self):
         print(f'Input is: ')
         db_result = Nimbus_Attendees.get_all_attendees()
