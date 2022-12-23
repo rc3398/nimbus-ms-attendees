@@ -38,7 +38,7 @@ class Nimbus_Attendees:
         conn = Nimbus_Attendees._get_connection()
         cur = conn.cursor()
         sql = "INSERT INTO contact_info (first_name, last_name, email_address, birth_date, phone, gender, attendee_id) VALUES (%s,%s,%s,%s,%s,%s,%s);"
-        args = (attendee.first_name, attendee.last_name, attendee.email_address, attendee.birth_date, attendee.phone, attendee.gender, attendee.email_address)
+        args = (attendee.first_name, attendee.last_name, attendee.email_address, attendee.birth_date, attendee.phone, attendee.gender, attendee.attendee_id)
 
         try:
             result = cur.execute(sql, args=args)

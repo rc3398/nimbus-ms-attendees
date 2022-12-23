@@ -70,7 +70,7 @@ def after_request_func():
 """
 
 attendee_model = api.model('Attendee', {
-    'uid': fields.String(required=False, description="Attendee ID. Omitted for Create, Update."),
+    'attendee_id': fields.String(required=False, description="Attendee ID. Omitted for Create, Update."),
     'first_name': fields.String(description=""),
     'last_name': fields.String(description=""),
     'email_address': fields.String(description=""),
@@ -134,6 +134,7 @@ class Attendees(Resource):
         # Validate and deserialize input
         try:
             attendee_schema = AttendeeSchema(many=False)
+            json_input['attendee_id'] = uid
             up_attendee = attendee_schema.load(json_input)
             print(str(up_attendee.gender))
             if 'Female'.lower() in str(up_attendee.gender).lower():
@@ -181,9 +182,7 @@ class Attendees(Resource):
 
 @api.route("/attendees-list", endpoint='attendees_list')
 class AttendeesList(Resource):
-    attendee_model_create = copy.copy(attendee_model)
-    del attendee_model_create['uid']
-    @api.doc(id='Create new attendee', body=attendee_model_create)
+    @api.doc(id='Create new attendee', body=attendee_model)
     @api.doc(responses={
         202: 'Created',
         422: 'Validation Error',
@@ -191,11 +190,18 @@ class AttendeesList(Resource):
     })
     def post(self) -> Response:
         json_input = request.get_json()
+        # uid=NimbusJWT_Authentication.get_userid_from_idtoken()
         print(f'Input is: {json_input}')
         
         if not json_input:
             return {"message": "No input data provided"}, 400
         try:
+            if 'Female'.lower() in str(json_input['gender']).lower():
+                json_input['gender'] = 'FEMALE'
+            elif 'Male'.lower() in str(json_input['gender']).lower():
+                json_input['gender'] = 'MALE'
+            else:
+                json_input['gender'] = 'OTHER'
             attendee_schema = AttendeeSchema(many=False)
             new_attendee = attendee_schema.load(json_input)
             print(vars(new_attendee))
