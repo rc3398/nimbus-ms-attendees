@@ -76,6 +76,21 @@ attendee_model = api.model('Attendee', {
     'gender': fields.String(description="[MALE, FEMALE, OTHER]"),
 })
 
+@app.get("/api/health")
+def get_health():
+    t = str(datetime.now())
+    msg = {
+        "name": "F22-Starter-Microservice",
+        "health": "Good",
+        "at time": t
+    }
+
+    # DFF TODO Explain status codes, content type, ... ...
+    result = Response(json.dumps(msg), status=200,
+                      content_type="application/json")
+
+    return result
+
 @api.route("/<string:uid>", endpoint='attendees_resource')
 class Attendees(Resource):
 
@@ -272,4 +287,4 @@ class AttendeeSchemaResponse(Schema):
 
 
 if __name__ == '__main__':
-    app.run(host='localhost', port=5021, debug=False)
+    app.run(host='0.0.0.0', port=5021, debug=True)
