@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "nimbus-367902",
+  "private_key_id": "d114b5ef65ab426283666d679faa3b16d8ee02f8",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDbtY738eoVQo6b\nF+hIQ1gFrToHF2HuDua8idTFU1HR6L6h9Jok2PlC+F+e+BXbC0Dp2oyqRXw4RBjr\n4+j/vdIpXx0Dehht4EWeap4d7i9U3NbG6EeySbHvoWnVQ5JqKN7+/CVDldOG1s9T\n1DV5VP0ZwFqRtf2AE+7J17hcQjT3eTJqfowBmo/eYJ3YceHBuZA7sZiFCwGIrTJo\nKEHbtlJmlpn2CqITyZ5KKugARbcbrv4csC6bJ4rxoTz8STOqc8FSeKAik33utwpN\nQX7s9FqeQe7e5u19egBdvqijY3iFykU5KNJBZsyCDcz6fMVNhEMWKakDGg7c1IqC\nUITlHoclAgMBAAECggEAEmUWDj5L2fHTnLqYsQwqX3dMZ3GWuma2/MwRa1/5drik\n1Ux0Z2dfHzNKVjXxJoC/s5SfuFXO+6r/5ygSxu6unNYgyLy9NN3VFllY2aqqfdFr\njgW+kvfGlQiPotJgfNDlMrYLrKfrqNttSlh3DayG8FQBgTeafNGuaWnNPrQwWRO9\n4rH74VluBPgWjHFlMu7msnNVxlAX3qh3Ktnaofla7dPr98WuqNEYz3JT8YrYJIfJ\nM0OiaUli2yPNHtcvp8fBPvVRh1OXbfMEPO+CMJN8/LvNg9OZ//IcT0lN6OQu4Bew\nsn9bXywlu003uyz1zApfykN765URoK00VmZzt4OqtQKBgQDytIuUU9TRUNSmtMAf\nwlP+mAeAwW2on8S06D0pdFBiCrzK84zaAFUKIVVLi4JOKoOPefOeIYJrW+RNtPyF\n87j6oDU8kM/n3PIUrT/nCg97KWfoYeCJAmmlXrxtjw1meHJAGE25ees0nbqu4GJM\nf4N+BXHOp6YEjwQGJJNtcwXuTwKBgQDnvooy0p2yT31Who97iDu8Z/2AtZPSLf1a\nfjzcOdzebzhLyAxLb2zZ7l5LU+12IM75G4k2J0KsUhprre2GPp5ckWQqSu9cVL8G\nhEIE3sG2/t5+IYcTvaLvk3w581ilwFXiOJng0HaPGYO7OFnI9Y8f093GhoRcJmX0\nZ6+mNrtqSwKBgEC/we0UYFZnRhQjbI4MffQSAw5qjCLMXOIWgxqoGTnOu4c5an5O\nUGGfeu3ojh7kYKzKUCADuJODtGi2vBfQaa0TSKCb0Zt96mdxwPaWTIMDDOGGGyzy\nI9UmbQadf2mzAGfxE+tDh2hGHCPDYPYfnqjkMvR67WOR8/TflSVB5ncpAoGBAIPl\nWlqarM4zl66LX1Z7ryQIO6vprHxPWIcMmi7tb9vZiTz4WqcEf/t5Q4mz9s7o1WPK\nXEnKBpR1Fjx6/VkOgqtExLGdfKYcRay70adb8PzqCk/XXT3LDNU2J9oDukx8L2VV\nuZ7OhuvjJaqE4/UQbak7uFmpbePUpup3qOz88aYJAoGALPtci1V6m4W9w/iZZSE4\nh5ALxFeKVcw6NUOooSybrsLku4Ko9iyMm1K30E9l/yNjsInmaXN6Z0/b9V+A0Wk7\nf0233BvNa1jc7unXQ8bvRNYg6JkDYkKa7+J/nLiXYQYKPaMhUWBLq4gpbfHkG0C2\n58bLmK0R2nLaYGuQrEtt6Vw=\n-----END PRIVATE KEY-----\n",
+  "client_email": "nimbus-service-account@nimbus-367902.iam.gserviceaccount.com",
+  "client_id": "104279986276857145704",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/nimbus-service-account%40nimbus-367902.iam.gserviceaccount.com"
+}

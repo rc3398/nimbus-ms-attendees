@@ -35,3 +35,7 @@ pip3 install -r requirements.txt
 cd nimbus-ms-attendees/microservice_attendees
 python3 application.py
 ```
+
+References
+[flask-restx](https://flask-restx.readthedocs.io/en/latest/api.html, https://flask-restx.readthedocs.io/_/downloads/en/latest/pdf/)
+[flask](https://flask.palletsprojects.com/en/2.2.x/)
