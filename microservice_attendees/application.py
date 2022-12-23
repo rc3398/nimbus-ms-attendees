@@ -10,6 +10,11 @@ from flask_cors import CORS
 from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk import capture_exception
 from werkzeug.middleware.proxy_fix import ProxyFix
+from marshmallow import Schema, post_load
+from marshmallow_enum import EnumField
+from flask_marshmallow import Marshmallow
+from enum import Enum
+import copy
 
 # Create the Flask application object.
 application = app = Flask(__name__,
@@ -24,7 +29,7 @@ api = Api(app, version='1.0',
           default_label='ms-attendees',
 )
 CORS(app)
-
+ma = Marshmallow(app)
 
 # TODO: Add caching
 # TODO: store these constants in a shared file
@@ -71,7 +76,7 @@ attendee_model = api.model('Attendee', {
     'gender': fields.String(description="[MALE, FEMALE, OTHER]"),
 })
 
-@api.route("/<string:uid>")
+@api.route("/<string:uid>", endpoint='attendees_resource')
 class Attendees(Resource):
 
     @api.doc(id='Get attendee by uid', params={'uid': 'Attendee ID'})
@@ -84,8 +89,10 @@ class Attendees(Resource):
         print(f'Input is: {uid}')
         db_result = Nimbus_Attendees.get_attendee_by_uid(uid)
         
+        attendee_schema_response = AttendeeSchemaResponse(many=False) 
+        #print(f'This is our resp: {attendee_schema_response.dumps(db_result,default=str)}')
         if db_result:
-            response = Response(json.dumps(db_result,default=str), status=200,
+            response = Response(attendee_schema_response.dumps(db_result,default=str), status=200,
                                 content_type=CONTENT_TYPE_JSON)
         else:
             response = Response("NOT FOUND", status=404,
@@ -110,10 +117,10 @@ class Attendees(Resource):
             attendee_schema = AttendeeSchema(many=False)
             up_attendee = attendee_schema.load(json_input)
             print(str(up_attendee.gender))
-            if 'Male'.lower() in str(up_attendee.gender).lower():
-                up_attendee.gender = 'Male'
-            elif 'Female'.lower() in str(up_attendee.gender).lower():
+            if 'Female'.lower() in str(up_attendee.gender).lower():
                 up_attendee.gender = 'Female'
+            elif 'Male'.lower() in str(up_attendee.gender).lower():
+                up_attendee.gender = 'Male'
             else:
                 up_attendee.gender = 'Other'
             
@@ -157,10 +164,11 @@ class Attendees(Resource):
         return response
 
 
-@api.route("/attendees-list")
+@api.route("/attendees-list", endpoint='attendees_list')
 class AttendeesList(Resource):
-    
-    @api.doc(id='Create new attendee', body=attendee_model)
+    attendee_model_create = copy.copy(attendee_model)
+    del attendee_model_create['uid']
+    @api.doc(id='Create new attendee', body=attendee_model_create)
     @api.doc(responses={
         202: 'Created',
         422: 'Validation Error',
@@ -194,8 +202,8 @@ class AttendeesList(Resource):
     
     
     # TODO: Add pagination 
-    @api.doc(id='Get list of attendees, PAGINATED')
-    @api.marshal_list_with(attendee_model)
+    #@api.doc(id='Get list of attendees, PAGINATED')
+    #@api.marshal_list_with(attendee_model)
     @api.doc(responses={
         200: 'Success',
         500: 'Internal Server Error'
@@ -203,7 +211,11 @@ class AttendeesList(Resource):
     def get(self):
         print(f'Input is: ')
         db_result = Nimbus_Attendees.get_all_attendees()
-        
+        #print(db_result) 
+        print(json.dumps(db_result,default=str))
+        print('attend schema response')
+        attendee_schema_response = AttendeeSchemaResponse(many=True)
+        print(f'This is our resp attendee schema: {attendee_schema_response.dumps(db_result,default=str)}')
         if db_result:
             response = Response(json.dumps(db_result,default=str), status=200,
                                 content_type=CONTENT_TYPE_JSON)
@@ -247,6 +259,16 @@ def validate_the_email(email_address):
         print(str(e))
         capture_exception(e)
         raise(e)
+
+
+class AttendeeSchemaResponse(Schema):
+    class Meta:
+        fields = ('attendee_id', 'first_name', 'last_name', 'email_address', 'birth_date', 'phone', 'gender','_links')
+    #print(ma)
+    _links = ma.Hyperlinks(
+        {"collection": ma.URLFor('attendees_list'),
+         "self":ma.URLFor('attendees_resource',uid='<attendee_id>')} 
+    )
 
 
 if __name__ == '__main__':

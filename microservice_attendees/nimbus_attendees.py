@@ -87,12 +87,9 @@ class Nimbus_Attendees:
         conn = Nimbus_Attendees._get_connection()
         cur = conn.cursor()
         res = cur.execute(sql, (attendee.first_name, attendee.last_name,attendee.birth_date, attendee.phone, attendee.gender,uid))
-        if res:
-            return Nimbus_Attendees.get_attendee_by_uid(uid)
-        else:
-            return None
-
-
+        return res
+    
+    
     @staticmethod
     def delete_attendee_by_uid(uid):
         sql = "DELETE FROM contact_info WHERE attendee_id=%s;"
@@ -112,13 +109,13 @@ if __name__ == "__main__":
         if cur.connection:
             print("Connected")
             print("Testing get_all_attendee")
-            #for i in nimbus.get_all_attendees():
-            #    print(i)
-            # print("testing creating a user")
-            # print(nimbus.get_attendee_by_uid('lcusty2@ehow.com'))
-            print('Testing update')
-            new_up = Attendee('John2','Cena2','Female','johncena2@gmail.com','2005-02-03','917-623-6790')
-            nimbus.update_attendee_by_uid('johncena2@gmail.com',new_up)
+            for i in nimbus.get_all_attendees():
+                print(i)
+            print("testing creating a user")
+            print(nimbus.get_attendee_by_uid('lcusty2@ehow.com'))
+            #print('Testing update')
+            #new_up = Attendee('John2','Cena2','Female','johncena2@gmail.com','2005-02-03','917-623-6790')
+            #nimbus.update_attendee_by_uid('johncena2@gmail.com',new_up)
             print('get')
             print(nimbus.get_attendee_by_uid('johncena2@gmail.com')) 
         else:
